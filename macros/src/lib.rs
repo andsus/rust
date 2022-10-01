@@ -10,6 +10,7 @@ macro_rules! hashmap {
         hmap
     }};
 }
+
 // The inside pattern is saying to match one or more of key=>val with zero or one comma after it. The outside pattern is saying there could be zero or more of the inside pattern, which takes care of test_empty.
 /*
 #[macro_export]
@@ -22,3 +23,15 @@ macro_rules! hashmap {
 }
 
 */
+
+// #[macro_export]
+// macro_rules! hashmap {
+//     ( $($key:expr => $value:expr),* ) => {
+//         {
+//             let mut _m = ::std::collections::HashMap::new();
+//             $(_m.insert($key, $value);)*
+//             _m
+//         }
+//     };
+//     ( $($key:expr => $value:expr,)+ ) => { hashmap! ($($key => $value),+) }
+// }

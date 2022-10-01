@@ -1,6 +1,5 @@
 /// Check a Luhn checksum.
 pub fn is_valid(code: &str) -> bool {
-    
     let mut sum = 0;
     let mut len = 0;
 
