@@ -13,15 +13,18 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          component: stable
-          target: x86_64-unknown-linux-gnu
+          profile: minimal
+          toolchain: stable
+          component: rustfmt, clippy
 
-      - uses: actions/cache@v3
-        with:
-          path: target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check format
+        run: cargo fmt -- --check
+
+      - name: Build
+        run: cargo build --locked --verbose
 
 
       - name: Build child projects
@@ -39,8 +42,9 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          component: stable
-          target: x86_64-unknown-linux-gnu
+          profile: minimal
+          toolchain: stable
+          component: rustfmt, clippy
 
       - name: Run tests (child projects)
         run: |
