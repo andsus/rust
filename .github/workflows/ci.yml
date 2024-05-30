@@ -1,0 +1,49 @@
+name: Rust - Build and Test (Multi-Project)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          component: stable
+          target: x86_64-unknown-linux-gnu
+
+      - uses: actions/cache@v3
+        with:
+          path: target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+
+      - name: Build child projects
+        run: |
+          for project in $(find . -type d -name 'Cargo.toml' | grep -v './' | sort); do
+            cargo build --verbose --manifest-path "$project";
+          done
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # This job depends on the successful completion of the 'build' job
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          component: stable
+          target: x86_64-unknown-linux-gnu
+
+      - name: Run tests (child projects)
+        run: |
+          for project in $(find . -type d -name 'Cargo.toml' | grep -v './' | sort); do
+            cargo test --verbose --manifest-path "$project";
+          done
